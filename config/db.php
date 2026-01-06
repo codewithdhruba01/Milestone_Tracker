@@ -2,11 +2,11 @@
 // Database configuration
 $host = "localhost";
 $user = "root";
-$password = "Avani@1234";
+$password = ""; // XAMPP default: no password for root
 $database = "parent_toddler_tracker";
 
 // Create connection
-$conn = mysqli_connect("localhost", "root", "Avani@1234", "parent_toddler_tracker");
+$conn = mysqli_connect($host, $user, $password, $database);
 
 // Check connection
 if (!$conn) {
