@@ -365,16 +365,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         </div>
 
-        <button class='success-button' onclick='redirectToForm()'>Add Another Child</button>
+        <button class='success-button' onclick='redirectToHome()'>Go to Home</button>
     </div>
 
     <script>
-        function redirectToForm() {
-            window.location.href = 'add_child.php';
+        function redirectToHome() {
+            window.location.href = '../index.php';
         }
 
         // Auto redirect after 5 seconds
-        setTimeout(redirectToForm, 5000);
+        setTimeout(redirectToHome, 5000);
     </script>
 </body>
 </html>";
