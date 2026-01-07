@@ -3,7 +3,7 @@
 $host = "localhost";
 $user = "root";
 $password = ""; // XAMPP default: no password for root
-$database = "parent_toddler_tracker";
+$database = "child_management";
 
 // Create connection
 $conn = mysqli_connect($host, $user, $password, $database);

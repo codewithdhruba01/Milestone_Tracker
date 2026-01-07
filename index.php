@@ -1,5 +1,68 @@
 <?php
   include 'config/db.php';
+
+  // Fetch all children from database
+  $children = [];
+
+  // Temporary hardcoded children for testing (remove after database is fixed)
+  $children = [
+    [
+      'child_id' => 1,
+      'child_name' => 'Rahul Kumar',
+      'dob' => '2020-03-15',
+      'age_group' => '3-4',
+      'gender' => 'Male',
+      'center' => 'Dwarka Center',
+      'child_image' => '1767786429_photo8.jpg',
+      'age_display' => '3 Years 9 Months',
+      'age_years_only' => 3
+    ],
+    [
+      'child_id' => 2,
+      'child_name' => 'Priya Sharma',
+      'dob' => '2021-08-22',
+      'age_group' => '2-3',
+      'gender' => 'Female',
+      'center' => 'Karve Nagar Center',
+      'child_image' => '1767360115_Post by @azeez-unv · 1 image.jpeg',
+      'age_display' => '2 Years 4 Months',
+      'age_years_only' => 2
+    ]
+  ];
+
+  /*
+  try {
+    $sql = "SELECT child_id, child_name, dob, age_group, gender, center, child_image, created_at FROM children ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        // Calculate age in years and months
+        $birth_date = new DateTime($row['dob']);
+        $current_date = new DateTime();
+        $age_interval = $current_date->diff($birth_date);
+
+        $years = $age_interval->y;
+        $months = $age_interval->m;
+
+        $row['age_display'] = $years . ' Years ' . $months . ' Months';
+        $row['age_years_only'] = $years;
+        $children[] = $row;
+      }
+      error_log("Found " . count($children) . " children in database");
+    } else {
+      error_log("No children found in database or query failed");
+      if (!$result) {
+        error_log("Database query error: " . $conn->error);
+      }
+    }
+  } catch (Exception $e) {
+    error_log("Database error: " . $e->getMessage());
+  }
+  */
+
+  // Get the first child as default selected
+  $selected_child = !empty($children) ? $children[0] : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -178,6 +241,36 @@ body, html {
 .add-child:hover{
  background:#ff9800;
  color:#fff;
+}
+
+/* CHILD SWITCHING STYLES */
+.child-avatar {
+ cursor: pointer;
+ transition: all 0.3s ease;
+ position: relative;
+}
+
+.child-avatar.active {
+ transform: scale(1.1);
+ box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+ border: 3px solid #ff9800;
+}
+
+.child-avatar:hover {
+ transform: scale(1.05);
+ box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.child-avatar.active::after {
+ content: '';
+ position: absolute;
+ bottom: -5px;
+ left: 50%;
+ transform: translateX(-50%);
+ width: 8px;
+ height: 8px;
+ background: #ff9800;
+ border-radius: 50%;
 }
 
 /******** INFO **********/
@@ -475,21 +568,38 @@ body{
     <h2 class="section-title">Child Profile</h2>
     <div class="profile-area">
 
-    <!--  HERE — 2 Photos + Add Button -->
-    <div class="child-switch">
-      <img src="images.jpg">
-      <img src="images (1).jpg">
+    <!--  HERE — Dynamic Child Photos + Add Button -->
+    <div class="child-switch" id="child-switch">
+      <?php if (!empty($children)): ?>
+        <?php foreach ($children as $index => $child): ?>
+          <img src="add_child/uploads/img/<?php echo htmlspecialchars($child['child_image']); ?>"
+               alt="<?php echo htmlspecialchars($child['child_name']); ?>"
+               class="child-avatar <?php echo $index === 0 ? 'active' : ''; ?>"
+               data-child-id="<?php echo $child['child_id']; ?>"
+               data-child-name="<?php echo htmlspecialchars($child['child_name']); ?>"
+               data-child-age="<?php echo htmlspecialchars($child['age_display']); ?>"
+               data-child-center="<?php echo htmlspecialchars($child['center']); ?>"
+               data-child-age-years="<?php echo $child['age_years_only']; ?>"
+               onclick="switchChild(this)">
+        <?php endforeach; ?>
+      <?php else: ?>
+        <!-- No children found - show placeholder -->
+        <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: center; color: #666;">
+          No children registered yet. <a href="add_child/add_child.php" style="color: #ff9800;">Add your first child</a>
+        </div>
+      <?php endif; ?>
 
       <!-- Add Child Button Link -->
       <a href="add_child/add_child.php" class="add-child">+</a>
     </div>
 
     <div class="info-row">
-      <b>Name:</b> Karan Kumar | <span class="highlight">2 Years</span>
+      <b>Name:</b> <span id="child-name"><?php echo $selected_child ? htmlspecialchars($selected_child['child_name']) : 'No children added'; ?></span> |
+      <span class="highlight" id="child-age"><?php echo $selected_child ? htmlspecialchars($selected_child['age_display']) : ''; ?></span>
     </div>
 
     <div class="info-row">
-      Center: SpaceECE – Dwarka
+      Center: <span id="child-center"><?php echo $selected_child ? htmlspecialchars($selected_child['center']) : 'No center assigned'; ?></span>
     </div>
 
     <div class="info-row" id="displayData">
@@ -532,25 +642,25 @@ body{
 
     <div class="progress-grid">
 
-        <div class="progress-card" data-score="70">
+        <div class="progress-card" id="language-card" data-score="70">
             <div class="circle"><span></span></div>
             <h3>Language</h3>
             <p>Your children's speaking or linguistic skills</p>
         </div>
 
-        <div class="progress-card" data-score="90">
+        <div class="progress-card" id="motor-card" data-score="90">
             <div class="circle"><span></span></div>
             <h3>Motor</h3>
             <p>Your children's physical abilities that allow them to use muscles</p>
         </div>
 
-        <div class="progress-card" data-score="40">
+        <div class="progress-card" id="cognitive-card" data-score="40">
             <div class="circle"><span></span></div>
             <h3>Cognitive</h3>
             <p>Your children mental abilities that enable them to think</p>
         </div>
 
-        <div class="progress-card" data-score="100">
+        <div class="progress-card" id="social-card" data-score="100">
             <div class="circle"><span></span></div>
             <h3>Social</h3>
             <p>Your children abilities that enable people to communicate</p>
@@ -660,12 +770,88 @@ function updateData(){
  document.getElementById("displayData").innerHTML =
    "Height: " + h + "cm | Weight: " + w + "kg";
 
- // 👉 Input clear after submit
+ //Input clear after submit
  document.getElementById("heightInput").value = "";
  document.getElementById("weightInput").value = "";
 }
+
+// Child switching functionality
+function switchChild(selectedAvatar) {
+ // Remove active class from all avatars
+ document.querySelectorAll('.child-avatar').forEach(avatar => {
+   avatar.classList.remove('active');
+ });
+
+ // Add active class to selected avatar
+ selectedAvatar.classList.add('active');
+
+ // Update profile information
+ const childName = selectedAvatar.getAttribute('data-child-name');
+ const childAge = selectedAvatar.getAttribute('data-child-age');
+ const childCenter = selectedAvatar.getAttribute('data-child-center');
+ const childAgeYears = parseInt(selectedAvatar.getAttribute('data-child-age-years'));
+
+ document.getElementById('child-name').textContent = childName;
+ document.getElementById('child-age').textContent = childAge;
+ document.getElementById('child-center').textContent = childCenter;
+
+ // Update development progress cards based on age
+ updateDevelopmentProgress(childAgeYears);
+
+ // Update growth charts based on child ID
+ const childId = selectedAvatar.getAttribute('data-child-id');
+ updateGrowthCharts(childId);
+}
+
+// Update development progress based on child's age
+function updateDevelopmentProgress(ageInYears) {
+ const progressCards = document.querySelectorAll('.progress-card');
+
+ progressCards.forEach((card, index) => {
+   const circle = card.querySelector('.circle span');
+   let score = 0;
+   let status = '';
+
+   // Different progress based on age and development area
+   switch(index) {
+     case 0: // Language
+       score = ageInYears >= 2 ? 85 : ageInYears >= 1 ? 65 : 45;
+       status = score >= 85 ? 'Excellent' : score >= 70 ? 'Good' : 'Developing';
+       break;
+     case 1: // Motor
+       score = ageInYears >= 2 ? 90 : ageInYears >= 1 ? 75 : 50;
+       status = score >= 85 ? 'Perfect' : score >= 70 ? 'Excellent' : 'Good';
+       break;
+     case 2: // Cognitive
+       score = ageInYears >= 2 ? 40 : ageInYears >= 1 ? 55 : 30;
+       status = score >= 70 ? 'Excellent' : score >= 50 ? 'Good' : 'Developing';
+       break;
+     case 3: // Social
+       score = ageInYears >= 2 ? 100 : ageInYears >= 1 ? 80 : 60;
+       status = score >= 85 ? 'Perfect' : score >= 70 ? 'Excellent' : 'Good';
+       break;
+   }
+
+   circle.textContent = status;
+   card.setAttribute('data-score', score);
+ });
+}
+
+// Update growth charts based on child data (placeholder for now)
+function updateGrowthCharts(childId) {
+ // This would fetch real data from database in a full implementation
+ // For now, we'll keep the existing chart data
+ console.log('Updating charts for child ID:', childId);
+}
 </script>
-<script>
+// Initialize progress cards with dynamic data
+function initializeProgressCards() {
+ const defaultAge = <?php echo $selected_child ? $selected_child['age_years_only'] : 2; ?>;
+ updateDevelopmentProgress(defaultAge);
+}
+
+// Initialize on page load
+initializeProgressCards();
 // Company / backend thi score automatic aavse
 // Ahiya example score data attribute mathi lese
 
