@@ -164,10 +164,220 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Commit transaction
         $conn->commit();
 
-        echo "<script>
-            alert('Child profile and all milestone data saved successfully!\\n\\nChild ID: $child_id\\nMilestones recorded: $milestones_inserted');
-            window.location='add_child.php';
-        </script>";
+        echo "<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Success - Child Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffe9b3, #fff3d6);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .success-popup {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: popup 0.6s ease-out;
+            border: 3px solid #ffcc33;
+        }
+
+        @keyframes popup {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .success-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ffcc33;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .detail-value {
+            color: #ff6b35;
+            font-weight: 600;
+        }
+
+        .success-button {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .success-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffcc33;
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .particle:nth-child(2) { animation-delay: 0.5s; background: #4CAF50; }
+        .particle:nth-child(3) { animation-delay: 1s; background: #2196F3; }
+        .particle:nth-child(4) { animation-delay: 1.5s; background: #ff5722; }
+        .particle:nth-child(5) { animation-delay: 2s; background: #9c27b0; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .success-popup {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .success-title {
+                font-size: 24px;
+            }
+
+            .success-message {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class='success-popup'>
+        <div class='confetti'>
+            <div class='particle' style='left: 10%;'></div>
+            <div class='particle' style='left: 30%;'></div>
+            <div class='particle' style='left: 50%;'></div>
+            <div class='particle' style='left: 70%;'></div>
+            <div class='particle' style='left: 90%;'></div>
+        </div>
+
+        <div class='success-icon'>✓</div>
+
+        <h2 class='success-title'>Registration Successful!</h2>
+
+        <p class='success-message'>
+            Child profile and all milestone data have been saved successfully.
+        </p>
+
+        <div class='success-details'>
+            <div class='detail-row'>
+                <span class='detail-label'>Child ID:</span>
+                <span class='detail-value'>$child_id</span>
+            </div>
+            <div class='detail-row'>
+                <span class='detail-label'>Milestones Recorded:</span>
+                <span class='detail-value'>$milestones_inserted</span>
+            </div>
+        </div>
+
+        <button class='success-button' onclick='redirectToForm()'>Add Another Child</button>
+    </div>
+
+    <script>
+        function redirectToForm() {
+            window.location.href = 'add_child.php';
+        }
+
+        // Auto redirect after 5 seconds
+        setTimeout(redirectToForm, 5000);
+    </script>
+</body>
+</html>";
 
     } catch (Exception $e) {
         // Rollback transaction on error
