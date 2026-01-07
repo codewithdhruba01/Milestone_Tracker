@@ -4,33 +4,6 @@
   // Fetch all children from database
   $children = [];
 
-  // Temporary hardcoded children for testing (remove after database is fixed)
-  $children = [
-    [
-      'child_id' => 1,
-      'child_name' => 'Rahul Kumar',
-      'dob' => '2020-03-15',
-      'age_group' => '3-4',
-      'gender' => 'Male',
-      'center' => 'Dwarka Center',
-      'child_image' => '1767786429_photo8.jpg',
-      'age_display' => '3 Years 9 Months',
-      'age_years_only' => 3
-    ],
-    [
-      'child_id' => 2,
-      'child_name' => 'Priya Sharma',
-      'dob' => '2021-08-22',
-      'age_group' => '2-3',
-      'gender' => 'Female',
-      'center' => 'Karve Nagar Center',
-      'child_image' => '1767360115_Post by @azeez-unv · 1 image.jpeg',
-      'age_display' => '2 Years 4 Months',
-      'age_years_only' => 2
-    ]
-  ];
-
-  /*
   try {
     $sql = "SELECT child_id, child_name, dob, age_group, gender, center, child_image, created_at FROM children ORDER BY created_at DESC";
     $result = $conn->query($sql);
@@ -49,17 +22,11 @@
         $row['age_years_only'] = $years;
         $children[] = $row;
       }
-      error_log("Found " . count($children) . " children in database");
-    } else {
-      error_log("No children found in database or query failed");
-      if (!$result) {
-        error_log("Database query error: " . $conn->error);
-      }
     }
   } catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
+    // If database fails, show empty array (no children)
+    $children = [];
   }
-  */
 
   // Get the first child as default selected
   $selected_child = !empty($children) ? $children[0] : null;
