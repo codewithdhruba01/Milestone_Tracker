@@ -759,6 +759,58 @@ body{
   transform: translateY(-1px);
 }
 
+/* ===== FIX MODAL FORM OVERFLOW & ALIGNMENT ===== */
+
+.modal-content {
+  box-sizing: border-box;
+  overflow: hidden; /* bahar nikalne se roke */
+}
+
+#editChildForm {
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.form-group {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* File input ko bhi control me lao */
+.form-group input[type="file"] {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* Radio buttons alignment */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Modal actions buttons */
+.modal-actions {
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Small screen safety */
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95%;
+  }
+}
+
+
 
 </style>
 </head>
