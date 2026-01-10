@@ -224,20 +224,76 @@ body, html {
 }
 
 .child-avatar:hover {
- transform: scale(1.05);
- box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .child-avatar.active::after {
- content: '';
- position: absolute;
- bottom: -5px;
- left: 50%;
- transform: translateX(-50%);
- width: 8px;
- height: 8px;
- background: #ff9800;
- border-radius: 50%;
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #ff9800;
+  border-radius: 50%;
+}
+
+/* CHILD AVATAR CONTAINER AND ACTIONS */
+.child-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.child-actions {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.child-avatar-container:hover .child-actions {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.edit-child-btn, .delete-child-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.edit-child-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.edit-child-btn:hover {
+  background: #1976D2;
+  transform: scale(1.1);
+}
+
+.delete-child-btn {
+  background: #f44336;
+  color: white;
+}
+
+.delete-child-btn:hover {
+  background: #d32f2f;
+  transform: scale(1.1);
 }
 
 /******** INFO **********/
@@ -505,6 +561,204 @@ body{
   z-index:999;
 }
 
+/* MODAL STYLES */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 500px;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.small-modal {
+  max-width: 400px;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+  background: linear-gradient(135deg, #ffe9b3, #fff3d6);
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.close-modal {
+  font-size: 28px;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: #ff9800;
+}
+
+.modal-body {
+  padding: 25px;
+  text-align: center;
+}
+
+.warning-text {
+  color: #f44336;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* FORM STYLES */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ffcc7f;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid #ffcc7f;
+  border-radius: 10px;
+  background: #fff8e5;
+}
+
+.current-image {
+  margin-top: 5px;
+}
+
+.current-image small {
+  color: #666;
+  font-style: italic;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  margin: 0;
+}
+
+/* MODAL ACTIONS */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px 25px;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+  border-radius: 0 0 15px 15px;
+}
+
+.cancel-btn, .save-btn, .delete-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn {
+  background: #9e9e9e;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #757575;
+}
+
+.save-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
 
 </style>
 </head>
@@ -539,15 +793,28 @@ body{
     <div class="child-switch" id="child-switch">
       <?php if (!empty($children)): ?>
         <?php foreach ($children as $index => $child): ?>
-          <img src="add_child/uploads/img/<?php echo htmlspecialchars($child['child_image']); ?>"
-               alt="<?php echo htmlspecialchars($child['child_name']); ?>"
-               class="child-avatar <?php echo $index === 0 ? 'active' : ''; ?>"
-               data-child-id="<?php echo $child['child_id']; ?>"
-               data-child-name="<?php echo htmlspecialchars($child['child_name']); ?>"
-               data-child-age="<?php echo htmlspecialchars($child['age_display']); ?>"
-               data-child-center="<?php echo htmlspecialchars($child['center']); ?>"
-               data-child-age-years="<?php echo $child['age_years_only']; ?>"
-               onclick="switchChild(this)">
+          <div class="child-avatar-container">
+            <img src="add_child/uploads/img/<?php echo htmlspecialchars($child['child_image']); ?>"
+                 alt="<?php echo htmlspecialchars($child['child_name']); ?>"
+                 class="child-avatar <?php echo $index === 0 ? 'active' : ''; ?>"
+                 data-child-id="<?php echo $child['child_id']; ?>"
+                 data-child-name="<?php echo htmlspecialchars($child['child_name']); ?>"
+                 data-child-age="<?php echo htmlspecialchars($child['age_display']); ?>"
+                 data-child-center="<?php echo htmlspecialchars($child['center']); ?>"
+                 data-child-age-years="<?php echo $child['age_years_only']; ?>"
+                 data-child-gender="<?php echo htmlspecialchars($child['gender']); ?>"
+                 data-child-dob="<?php echo htmlspecialchars($child['dob']); ?>"
+                 data-child-image="<?php echo htmlspecialchars($child['child_image']); ?>"
+                 onclick="switchChild(this)">
+            <div class="child-actions">
+              <button class="edit-child-btn" onclick="editChild(event, <?php echo $child['child_id']; ?>)" title="Edit Child">
+                ✏️
+              </button>
+              <button class="delete-child-btn" onclick="deleteChild(event, <?php echo $child['child_id']; ?>, '<?php echo htmlspecialchars($child['child_name']); ?>')" title="Delete Child">
+                🗑️
+              </button>
+            </div>
+          </div>
         <?php endforeach; ?>
       <?php else: ?>
         <!-- No children found - show placeholder -->
@@ -724,6 +991,78 @@ body{
 <!-- Tooltip -->
 <div id="tooltip"></div>
 
+<!-- Edit Child Modal -->
+<div id="editChildModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Edit Child Details</h2>
+      <span class="close-modal" onclick="closeEditModal()">&times;</span>
+    </div>
+    <form id="editChildForm" enctype="multipart/form-data">
+      <input type="hidden" id="editChildId" name="child_id">
+
+      <div class="form-group">
+        <label for="editChildName">Child Name *</label>
+        <input type="text" id="editChildName" name="child_name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="editChildDob">Date of Birth *</label>
+        <input type="date" id="editChildDob" name="dob" required>
+      </div>
+
+      <div class="form-group">
+        <label>Gender *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="Male" required> Male</label>
+          <label><input type="radio" name="gender" value="Female" required> Female</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="editChildCenter">Center *</label>
+        <select id="editChildCenter" name="center" required>
+          <option value="">Choose nearby center</option>
+          <option>Dhayari</option>
+          <option>Khed Shivapur</option>
+          <option>Karve Nagar</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="editChildImage">Update Image (optional)</label>
+        <input type="file" id="editChildImage" name="child_image" accept="image/*">
+        <div class="current-image">
+          <small>Current image: <span id="currentImageName"></span></small>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="save-btn">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal" class="modal">
+  <div class="modal-content small-modal">
+    <div class="modal-header">
+      <h2>Confirm Delete</h2>
+      <span class="close-modal" onclick="closeDeleteModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete <strong id="deleteChildName"></strong>'s profile?</p>
+      <p class="warning-text">This action cannot be undone and will remove all associated data.</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+      <button type="button" class="delete-btn" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
 <script>
 function updateData(){
  let h = document.getElementById("heightInput").value;
@@ -810,6 +1149,203 @@ function updateGrowthCharts(childId) {
  // For now, we'll keep the existing chart data
  console.log('Updating charts for child ID:', childId);
 }
+
+/* ===========================================
+   EDIT AND DELETE CHILD FUNCTIONS
+=========================================== */
+
+// Edit Child Functions
+function editChild(event, childId) {
+ event.stopPropagation(); // Prevent triggering switchChild
+
+ const childAvatar = event.target.closest('.child-avatar-container').querySelector('.child-avatar');
+ const childData = {
+   id: childAvatar.getAttribute('data-child-id'),
+   name: childAvatar.getAttribute('data-child-name'),
+   dob: childAvatar.getAttribute('data-child-dob'),
+   gender: childAvatar.getAttribute('data-child-gender'),
+   center: childAvatar.getAttribute('data-child-center'),
+   image: childAvatar.getAttribute('data-child-image')
+ };
+
+ // Populate modal with current data
+ document.getElementById('editChildId').value = childData.id;
+ document.getElementById('editChildName').value = childData.name;
+ document.getElementById('editChildDob').value = childData.dob;
+ document.querySelector(`input[name="gender"][value="${childData.gender}"]`).checked = true;
+ document.getElementById('editChildCenter').value = childData.center;
+ document.getElementById('currentImageName').textContent = childData.image;
+
+ // Show modal
+ document.getElementById('editChildModal').style.display = 'block';
+ document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+ document.getElementById('editChildModal').style.display = 'none';
+ document.body.style.overflow = 'auto';
+ document.getElementById('editChildForm').reset();
+}
+
+// Delete Child Functions
+function deleteChild(event, childId, childName) {
+ event.stopPropagation(); // Prevent triggering switchChild
+
+ document.getElementById('deleteChildName').textContent = childName;
+ document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete(childId);
+
+ // Show modal
+ document.getElementById('deleteConfirmModal').style.display = 'block';
+ document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+ document.getElementById('deleteConfirmModal').style.display = 'none';
+ document.body.style.overflow = 'auto';
+}
+
+function confirmDelete(childId) {
+ // Disable button to prevent multiple clicks
+ const deleteBtn = document.getElementById('confirmDeleteBtn');
+ deleteBtn.disabled = true;
+ deleteBtn.textContent = 'Deleting...';
+
+ // Send delete request
+ const formData = new FormData();
+ formData.append('child_id', childId);
+
+ fetch('add_child/delete_child.php', {
+   method: 'POST',
+   body: formData
+ })
+ .then(response => response.json())
+ .then(data => {
+   if (data.success) {
+     // Remove child from UI
+     const childContainer = document.querySelector(`[data-child-id="${childId}"]`).closest('.child-avatar-container');
+     childContainer.remove();
+
+     // Check if this was the active child
+     const wasActive = childContainer.querySelector('.child-avatar').classList.contains('active');
+
+     if (wasActive) {
+       // Select the first remaining child or show no children message
+       const remainingChildren = document.querySelectorAll('.child-avatar');
+       if (remainingChildren.length > 0) {
+         switchChild(remainingChildren[0]);
+       } else {
+         // No children left
+         document.getElementById('child-name').textContent = 'No children added';
+         document.getElementById('child-age').textContent = '';
+         document.getElementById('child-center').textContent = 'No center assigned';
+
+         // Show placeholder
+         const childSwitch = document.getElementById('child-switch');
+         childSwitch.innerHTML = `
+           <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; text-align: center; color: #666;">
+             No children registered yet. <a href="add_child/add_child.php" style="color: #ff9800;">Add your first child</a>
+           </div>
+           <a href="add_child/add_child.php" class="add-child">+</a>
+         `;
+       }
+     }
+
+     alert('Child profile deleted successfully!');
+     closeDeleteModal();
+   } else {
+     throw new Error(data.message || 'Failed to delete child');
+   }
+ })
+ .catch(error => {
+   console.error('Delete error:', error);
+   alert('Error deleting child: ' + error.message);
+ })
+ .finally(() => {
+   // Re-enable button
+   deleteBtn.disabled = false;
+   deleteBtn.textContent = 'Delete';
+ });
+}
+
+// Handle Edit Form Submission
+document.getElementById('editChildForm').addEventListener('submit', function(e) {
+ e.preventDefault();
+
+ const submitBtn = this.querySelector('.save-btn');
+ const originalText = submitBtn.textContent;
+ submitBtn.disabled = true;
+ submitBtn.textContent = 'Saving...';
+
+ const formData = new FormData(this);
+
+ fetch('add_child/update_child.php', {
+   method: 'POST',
+   body: formData
+ })
+ .then(response => response.json())
+ .then(data => {
+   if (data.success) {
+     // Update the child avatar in UI
+     const childId = data.data.child_id;
+     const childAvatar = document.querySelector(`[data-child-id="${childId}"]`);
+
+     if (childAvatar) {
+       // Update all data attributes
+       childAvatar.setAttribute('data-child-name', data.data.child_name);
+       childAvatar.setAttribute('data-child-dob', data.data.dob);
+       childAvatar.setAttribute('data-child-gender', data.data.gender);
+       childAvatar.setAttribute('data-child-center', data.data.center);
+       childAvatar.setAttribute('data-child-image', data.data.child_image);
+       childAvatar.setAttribute('data-child-age', data.data.age_display);
+       childAvatar.setAttribute('data-child-age-years', data.data.age_years_only);
+
+       // Update image source if changed
+       if (data.data.child_image !== childAvatar.getAttribute('data-child-image')) {
+         childAvatar.src = `add_child/uploads/img/${data.data.child_image}`;
+       }
+
+       // Update alt text
+       childAvatar.alt = data.data.child_name;
+
+       // If this is the currently active child, update the profile info
+       if (childAvatar.classList.contains('active')) {
+         document.getElementById('child-name').textContent = data.data.child_name;
+         document.getElementById('child-age').textContent = data.data.age_display;
+         document.getElementById('child-center').textContent = data.data.center;
+
+         // Update development progress
+         updateDevelopmentProgress(data.data.age_years_only);
+       }
+     }
+
+     alert('Child profile updated successfully!');
+     closeEditModal();
+   } else {
+     throw new Error(data.message || 'Failed to update child');
+   }
+ })
+ .catch(error => {
+   console.error('Update error:', error);
+   alert('Error updating child: ' + error.message);
+ })
+ .finally(() => {
+   submitBtn.disabled = false;
+   submitBtn.textContent = originalText;
+ });
+});
+
+// Close modals when clicking outside
+window.addEventListener('click', function(event) {
+ const editModal = document.getElementById('editChildModal');
+ const deleteModal = document.getElementById('deleteConfirmModal');
+
+ if (event.target === editModal) {
+   closeEditModal();
+ }
+ if (event.target === deleteModal) {
+   closeDeleteModal();
+ }
+});
 </script>
 // Initialize progress cards with dynamic data
 function initializeProgressCards() {
