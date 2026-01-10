@@ -570,38 +570,19 @@ body{
   top: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.15));
-  backdrop-filter: blur(8px);
-  animation: modalBackdropFadeIn 0.3s ease-out;
-}
-
-@keyframes modalBackdropFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
-  margin: 3% auto;
+  background-color: #fff;
+  margin: 5% auto;
   padding: 0;
-  border-radius: 20px;
-  box-shadow:
-    0 25px 80px rgba(255, 152, 0, 0.15),
-    0 10px 30px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   width: 90%;
-  max-width: 650px;
-  animation: modalFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(255, 152, 0, 0.1);
-  overflow: hidden;
-}
-
-.edit-modal {
-  max-width: 700px;
+  max-width: 500px;
+  animation: modalFadeIn 0.3s ease-out;
 }
 
 .small-modal {
@@ -611,11 +592,11 @@ body{
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-30px) scale(0.95) rotate(-1deg);
+    transform: translateY(-50px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -623,82 +604,29 @@ body{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 30px;
-  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
-  color: white;
-  position: relative;
-  overflow: hidden;
+  padding: 20px 25px;
+  border-bottom: 1px solid #eee;
+  background: linear-gradient(135deg, #ffe9b3, #fff3d6);
+  border-radius: 15px 15px 0 0;
 }
 
-.modal-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="15" r="1.5" fill="rgba(255,255,255,0.08)"/><circle cx="60" cy="8" r="0.8" fill="rgba(255,255,255,0.12)"/><circle cx="80" cy="12" r="1.2" fill="rgba(255,255,255,0.06)"/></svg>');
-  opacity: 0.5;
-}
-
-.modal-title {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  z-index: 1;
-  position: relative;
-}
-
-.modal-icon {
-  font-size: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.modal-title h2 {
+.modal-header h2 {
   margin: 0;
+  color: #333;
   font-size: 24px;
   font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.modal-title p {
-  margin: 2px 0 0 0;
-  font-size: 14px;
-  opacity: 0.9;
-  font-weight: 400;
 }
 
 .close-modal {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  color: white;
+  color: #666;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.2);
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 1;
-  position: relative;
+  transition: color 0.3s;
 }
 
 .close-modal:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1) rotate(90deg);
+  color: #ff9800;
 }
 
 .modal-body {
@@ -713,332 +641,122 @@ body{
 }
 
 /* FORM STYLES */
-.form-container {
-  padding: 30px;
-  background: #fafafa;
-}
-
-.form-section {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  border: 1px solid rgba(255, 152, 0, 0.08);
-  transition: all 0.3s ease;
-}
-
-.form-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 152, 0, 0.1);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.section-icon {
-  font-size: 20px;
-  background: linear-gradient(135deg, #ff9800, #ffb74d);
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.section-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .form-group {
   margin-bottom: 20px;
 }
 
 .form-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  display: block;
+  margin-bottom: 8px;
   font-weight: 600;
   color: #555;
   font-size: 14px;
-}
-
-.label-icon {
-  font-size: 16px;
-}
-
-.input-wrapper {
-  position: relative;
 }
 
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group select {
   width: 100%;
-  padding: 15px 18px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 15px;
+  padding: 12px 15px;
+  border: 2px solid #ffcc7f;
+  border-radius: 10px;
+  font-size: 14px;
   font-family: inherit;
-  background: #fafafa;
-  transition: all 0.3s ease;
-  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="date"]:focus,
 .form-group select:focus {
+  outline: none;
   border-color: #ff9800;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
 }
 
-.input-focus-border {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #ff9800, #ffb74d);
-  transition: all 0.3s ease;
-  border-radius: 1px;
-}
-
-.input-wrapper:focus-within .input-focus-border {
+.form-group input[type="file"] {
   width: 100%;
-  left: 0;
-}
-
-/* Gender Options */
-.gender-options {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.gender-option {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 15px 20px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  background: #fafafa;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.gender-option:hover {
-  border-color: #ff9800;
-  background: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.15);
-}
-
-.gender-option.male {
-  background: linear-gradient(135deg, #e3f2fd 0%, #fafafa 100%);
-}
-
-.gender-option.female {
-  background: linear-gradient(135deg, #fce4ec 0%, #fafafa 100%);
-}
-
-.gender-option input[type="radio"] {
-  display: none;
-}
-
-.gender-option input[type="radio"]:checked + .gender-icon + .gender-text {
-  color: #ff9800;
-  font-weight: 600;
-}
-
-.gender-option input[type="radio"]:checked ~ * {
-  color: #ff9800;
-}
-
-.gender-icon {
-  font-size: 24px;
-  transition: all 0.3s ease;
-}
-
-.gender-text {
-  font-weight: 500;
-  color: #666;
-  transition: all 0.3s ease;
-}
-
-/* File Upload */
-.file-upload-wrapper {
-  position: relative;
-}
-
-.file-upload-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 15px 20px;
-  border: 2px dashed #ffcc7f;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #fff8e5 0%, #fefefe 100%);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  justify-content: center;
-}
-
-.file-upload-btn:hover {
-  border-color: #ff9800;
-  background: linear-gradient(135deg, #fff3d6 0%, #fefefe 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.1);
-}
-
-.upload-icon {
-  font-size: 20px;
-}
-
-.upload-text {
-  font-weight: 500;
-  color: #666;
+  padding: 8px;
+  border: 2px solid #ffcc7f;
+  border-radius: 10px;
+  background: #fff8e5;
 }
 
 .current-image {
-  margin-top: 10px;
-  text-align: center;
+  margin-top: 5px;
 }
 
 .current-image small {
-  color: #888;
+  color: #666;
   font-style: italic;
-  background: rgba(255, 152, 0, 0.05);
-  padding: 5px 10px;
-  border-radius: 8px;
-  display: inline-block;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  margin: 0;
 }
 
 /* MODAL ACTIONS */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
-  padding: 25px 30px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-top: 1px solid rgba(255, 152, 0, 0.1);
+  gap: 10px;
+  padding: 20px 25px;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+  border-radius: 0 0 15px 15px;
 }
 
 .cancel-btn, .save-btn, .delete-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cancel-btn::before, .save-btn::before, .delete-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
-
-.cancel-btn:hover::before, .save-btn:hover::before, .delete-btn:hover::before {
-  left: 100%;
+  transition: all 0.3s;
 }
 
 .cancel-btn {
-  background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+  background: #9e9e9e;
   color: white;
-  box-shadow: 0 4px 15px rgba(158, 158, 158, 0.3);
 }
 
 .cancel-btn:hover {
-  background: linear-gradient(135deg, #757575 0%, #616161 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(158, 158, 158, 0.4);
+  background: #757575;
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  background: #4caf50;
   color: white;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
 }
 
 .save-btn:hover {
-  background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  background: #45a049;
+  transform: translateY(-1px);
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+  background: #f44336;
   color: white;
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
 }
 
 .delete-btn:hover {
-  background: linear-gradient(135deg, #ef5350 0%, #e57373 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
-}
-
-.btn-icon {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .modal-actions {
-    flex-direction: column;
-  }
-
-  .cancel-btn, .save-btn, .delete-btn {
-    width: 100%;
-    justify-content: center;
-  }
+  background: #d32f2f;
+  transform: translateY(-1px);
 }
 
 
@@ -1275,126 +993,53 @@ body{
 
 <!-- Edit Child Modal -->
 <div id="editChildModal" class="modal">
-  <div class="modal-content edit-modal">
+  <div class="modal-content">
     <div class="modal-header">
-      <div class="modal-title">
-        <div class="modal-icon">👶</div>
-        <div>
-          <h2>Edit Child Details</h2>
-          <p>Update your child's information</p>
-        </div>
-      </div>
+      <h2>Edit Child Details</h2>
       <span class="close-modal" onclick="closeEditModal()">&times;</span>
     </div>
-
     <form id="editChildForm" enctype="multipart/form-data">
       <input type="hidden" id="editChildId" name="child_id">
 
-      <div class="form-container">
-        <!-- Personal Information Section -->
-        <div class="form-section">
-          <div class="section-header">
-            <span class="section-icon">👤</span>
-            <h3>Personal Information</h3>
-          </div>
+      <div class="form-group">
+        <label for="editChildName">Child Name *</label>
+        <input type="text" id="editChildName" name="child_name" required>
+      </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editChildName">
-                <span class="label-icon">📝</span>
-                Child Name *
-              </label>
-              <div class="input-wrapper">
-                <input type="text" id="editChildName" name="child_name" placeholder="Enter child name" required>
-                <span class="input-focus-border"></span>
-              </div>
-            </div>
+      <div class="form-group">
+        <label for="editChildDob">Date of Birth *</label>
+        <input type="date" id="editChildDob" name="dob" required>
+      </div>
 
-            <div class="form-group">
-              <label for="editChildDob">
-                <span class="label-icon">🎂</span>
-                Date of Birth *
-              </label>
-              <div class="input-wrapper">
-                <input type="date" id="editChildDob" name="dob" required>
-                <span class="input-focus-border"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>
-              <span class="label-icon">⚧</span>
-              Gender *
-            </label>
-            <div class="gender-options">
-              <label class="gender-option male">
-                <input type="radio" name="gender" value="Male" required>
-                <span class="gender-icon">👦</span>
-                <span class="gender-text">Male</span>
-              </label>
-              <label class="gender-option female">
-                <input type="radio" name="gender" value="Female" required>
-                <span class="gender-icon">👧</span>
-                <span class="gender-text">Female</span>
-              </label>
-            </div>
-          </div>
+      <div class="form-group">
+        <label>Gender *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="Male" required> Male</label>
+          <label><input type="radio" name="gender" value="Female" required> Female</label>
         </div>
+      </div>
 
-        <!-- Center & Image Section -->
-        <div class="form-section">
-          <div class="section-header">
-            <span class="section-icon">🏫</span>
-            <h3>Center & Photo</h3>
-          </div>
+      <div class="form-group">
+        <label for="editChildCenter">Center *</label>
+        <select id="editChildCenter" name="center" required>
+          <option value="">Choose nearby center</option>
+          <option>Dhayari</option>
+          <option>Khed Shivapur</option>
+          <option>Karve Nagar</option>
+        </select>
+      </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="editChildCenter">
-                <span class="label-icon">📍</span>
-                Center *
-              </label>
-              <div class="input-wrapper">
-                <select id="editChildCenter" name="center" required>
-                  <option value="">Choose nearby center</option>
-                  <option>🏢 Dhayari</option>
-                  <option>🏢 Khed Shivapur</option>
-                  <option>🏢 Karve Nagar</option>
-                </select>
-                <span class="input-focus-border"></span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="editChildImage">
-                <span class="label-icon">📸</span>
-                Update Photo
-              </label>
-              <div class="file-upload-wrapper">
-                <input type="file" id="editChildImage" name="child_image" accept="image/*" hidden>
-                <label for="editChildImage" class="file-upload-btn">
-                  <span class="upload-icon">📤</span>
-                  <span class="upload-text">Choose New Photo</span>
-                </label>
-                <div class="current-image">
-                  <small>📁 Current: <span id="currentImageName"></span></small>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="form-group">
+        <label for="editChildImage">Update Image (optional)</label>
+        <input type="file" id="editChildImage" name="child_image" accept="image/*">
+        <div class="current-image">
+          <small>Current image: <span id="currentImageName"></span></small>
         </div>
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="cancel-btn" onclick="closeEditModal()">
-          <span class="btn-icon">❌</span>
-          Cancel
-        </button>
-        <button type="submit" class="save-btn">
-          <span class="btn-icon">💾</span>
-          Save Changes
-        </button>
+        <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="save-btn">Save Changes</button>
       </div>
     </form>
   </div>
