@@ -28,8 +28,29 @@
     $children = [];
   }
 
-  // Get the first child as default selected
-  $selected_child = !empty($children) ? $children[0] : null;
+// Get the first child as default selected
+$selected_child = !empty($children) ? $children[0] : null;
+
+// Handle growth data submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['child_id'])) {
+    $child_id = (int)$_POST['child_id'];
+    $height = (float)$_POST['height'];
+    $weight = (float)$_POST['weight'];
+    $check_date = date('Y-m-d');
+
+    // Insert growth record
+    $sql = "INSERT INTO child_growth_records (child_id, height, weight, check_date) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("idds", $child_id, $height, $weight, $check_date);
+    $stmt->execute();
+    $stmt->close();
+
+    // Redirect to prevent form resubmission
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Growth data is now loaded dynamically via AJAX
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -889,20 +910,23 @@ body{
     </div>
 
     <div class="info-row" id="displayData">
-      Height: 110cm | Weight: 19kg
+      Height: Loading... | Weight: Loading...
     </div>
 
     <div class="update-box">
-      Last Check: 1 Month Ago | Next Check: Today <br>
-      <b>Today physical data update required</b>
+      Last Check: Loading... | Next Check: Loading... <br>
+      <b>Loading...</b>
     </div>
 
-    <div class="inputs">
-      Height: <input type="number" id="heightInput" placeholder="cm">
-      Weight: <input type="number" id="weightInput" placeholder="kg">
-    </div>
+    <form id="growthForm" onsubmit="submitGrowthData(event)" style="display: inline;">
+      <input type="hidden" name="child_id" id="childIdInput">
+      <div class="inputs">
+        Height: <input type="number" name="height" id="heightInput" placeholder="cm" required>
+        Weight: <input type="number" name="weight" id="weightInput" placeholder="kg" required>
+      </div>
 
-    <button class="submit-btn" onclick="updateData()">Submit</button>
+      <button type="submit" class="submit-btn">Submit</button>
+    </form>
     </div>
 
     <a href="milestone-tracker.php" style="text-decoration:none; color:inherit;">
@@ -1116,21 +1140,80 @@ body{
 </div>
 
 <script>
-function updateData(){
- let h = document.getElementById("heightInput").value;
- let w = document.getElementById("weightInput").value;
+// Initialize the form with the first child's ID and fetch growth data
+document.addEventListener('DOMContentLoaded', function() {
+ const firstChild = document.querySelector('.child-avatar.active');
+ if (firstChild) {
+   const childId = firstChild.getAttribute('data-child-id');
+   document.getElementById('childIdInput').value = childId;
+   updateGrowthDisplay(childId);
+ }
+});
 
- if(h === "" || w === ""){
-   alert("Please enter Height and Weight");
-   return;
+// Function to update growth display for a specific child
+function updateGrowthDisplay(childId) {
+ // Make AJAX request to get growth data
+ fetch(`get_growth_data.php?child_id=${childId}`)
+  .then(response => response.json())
+  .then(data => {
+   if (data.success) {
+    const growth = data.growth_data;
+    document.getElementById('displayData').innerHTML =
+     `Height: ${growth.height} | Weight: ${growth.weight}`;
+    document.querySelector('.update-box').innerHTML =
+     `Last Check: ${growth.last_check} | Next Check: ${growth.next_check} <br>
+     <b>${growth.status}</b>`;
+   }
+  })
+  .catch(error => {
+   console.error('Error fetching growth data:', error);
+  });
+}
+
+// Function to submit growth data via AJAX
+function submitGrowthData(event) {
+ event.preventDefault();
+
+ const formData = new FormData(document.getElementById('growthForm'));
+ const childId = document.getElementById('childIdInput').value;
+
+ if (!childId) {
+  alert('Please select a child first');
+  return;
  }
 
- document.getElementById("displayData").innerHTML =
-   "Height: " + h + "cm | Weight: " + w + "kg";
+ const submitBtn = document.querySelector('.submit-btn');
+ const originalText = submitBtn.textContent;
+ submitBtn.disabled = true;
+ submitBtn.textContent = 'Saving...';
 
- //Input clear after submit
- document.getElementById("heightInput").value = "";
- document.getElementById("weightInput").value = "";
+ fetch('save_growth.php', {
+  method: 'POST',
+  body: formData
+ })
+ .then(response => response.json())
+ .then(data => {
+  if (data.success) {
+   alert('Growth data saved successfully!');
+
+   // Clear form inputs
+   document.getElementById('heightInput').value = '';
+   document.getElementById('weightInput').value = '';
+
+   // Refresh growth display
+   updateGrowthDisplay(childId);
+  } else {
+   throw new Error(data.message || 'Failed to save growth data');
+  }
+ })
+ .catch(error => {
+  console.error('Error saving growth data:', error);
+  alert('Error: ' + error.message);
+ })
+ .finally(() => {
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalText;
+ });
 }
 
 // Child switching functionality
@@ -1147,17 +1230,23 @@ function switchChild(selectedAvatar) {
  const childName = selectedAvatar.getAttribute('data-child-name');
  const childAge = selectedAvatar.getAttribute('data-child-age');
  const childCenter = selectedAvatar.getAttribute('data-child-center');
+ const childId = selectedAvatar.getAttribute('data-child-id');
  const childAgeYears = parseInt(selectedAvatar.getAttribute('data-child-age-years'));
 
  document.getElementById('child-name').textContent = childName;
  document.getElementById('child-age').textContent = childAge;
  document.getElementById('child-center').textContent = childCenter;
 
+ // Set child ID in hidden form field
+ document.getElementById('childIdInput').value = childId;
+
+ // Update growth display for this child
+ updateGrowthDisplay(childId);
+
  // Update development progress cards based on age
  updateDevelopmentProgress(childAgeYears);
 
  // Update growth charts based on child ID
- const childId = selectedAvatar.getAttribute('data-child-id');
  updateGrowthCharts(childId);
 }
 
@@ -1398,7 +1487,7 @@ window.addEventListener('click', function(event) {
    closeDeleteModal();
  }
 });
-</script>
+
 // Initialize progress cards with dynamic data
 function initializeProgressCards() {
  const defaultAge = <?php echo $selected_child ? $selected_child['age_years_only'] : 2; ?>;

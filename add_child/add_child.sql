@@ -35,6 +35,17 @@ CREATE TABLE child_milestones (
     FOREIGN KEY (child_id) REFERENCES children(child_id)
 );
 
+/* Table to store child growth records (height and weight) */
+CREATE TABLE IF NOT EXISTS child_growth_records (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    child_id INT,
+    height DECIMAL(5,2),
+    weight DECIMAL(5,2),
+    check_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (child_id) REFERENCES children(child_id) ON DELETE CASCADE
+);
+
 
 
 
