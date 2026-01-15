@@ -59,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['child_id'])) {
 <title>Parent Dashboard Website</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 
 
@@ -522,6 +523,12 @@ body{
   border-radius:20px;
   padding:25px;
   border:2px solid #ffcc33;
+}
+
+.chart-container {
+  width: 100%;
+  height: 250px;
+  position: relative;
 }
 
 .chart{
@@ -996,68 +1003,16 @@ body{
     <!-- HEIGHT CARD -->
     <div class="growth-card">
       <h3>🙂 Children Height Growth</h3>
-
-      <div class="chart">
-        <div class="y-axis">
-          <span>110</span>
-          <span>80</span>
-          <span>50</span>
-          <span>0</span>
-        </div>
-
-        <div class="graph-area">
-          <div class="line"></div>
-
-          <div class="points">
-            <span data-x="5"  data-value="April : 50 cm"  style="left:5%;  bottom:40%"></span>
-            <span data-x="25" data-value="May : 60 cm"    style="left:25%; bottom:55%"></span>
-            <span data-x="45" data-value="June : 65 cm"   style="left:45%; bottom:60%"></span>
-            <span data-x="65" data-value="July : 78 cm"   style="left:65%; bottom:70%"></span>
-            <span data-x="85" data-value="August : 90 cm" style="left:85%; bottom:80%"></span>
-          </div>
-
-          <div class="months">
-            <span>Apr</span>
-            <span>May</span>
-            <span>Jun</span>
-            <span>Jul</span>
-            <span>Aug</span>
-          </div>
-        </div>
+      <div class="chart-container">
+        <canvas id="heightChart" width="400" height="200"></canvas>
       </div>
     </div>
 
     <!-- WEIGHT CARD -->
     <div class="growth-card">
       <h3>🙂 Children Weight Growth</h3>
-
-      <div class="chart">
-        <div class="y-axis">
-          <span>20</span>
-          <span>16</span>
-          <span>12</span>
-          <span>0</span>
-        </div>
-
-        <div class="graph-area">
-          <div class="line"></div>
-
-          <div class="points">
-            <span data-x="5"  data-value="April : 10 kg"  style="left:5%;  bottom:35%"></span>
-            <span data-x="25" data-value="May : 12 kg"    style="left:25%; bottom:45%"></span>
-            <span data-x="45" data-value="June : 13 kg"   style="left:45%; bottom:50%"></span>
-            <span data-x="65" data-value="July : 16 kg"   style="left:65%; bottom:65%"></span>
-            <span data-x="85" data-value="August : 18 kg" style="left:85%; bottom:75%"></span>
-          </div>
-
-          <div class="months">
-            <span>Apr</span>
-            <span>May</span>
-            <span>Jun</span>
-            <span>Jul</span>
-            <span>Aug</span>
-          </div>
-        </div>
+      <div class="chart-container">
+        <canvas id="weightChart" width="400" height="200"></canvas>
       </div>
     </div>
 
@@ -1140,6 +1095,10 @@ body{
 </div>
 
 <script>
+// Global chart variables
+let heightChart = null;
+let weightChart = null;
+
 // Initialize the form with the first child's ID and fetch growth data
 document.addEventListener('DOMContentLoaded', function() {
  const firstChild = document.querySelector('.child-avatar.active');
@@ -1147,6 +1106,7 @@ document.addEventListener('DOMContentLoaded', function() {
    const childId = firstChild.getAttribute('data-child-id');
    document.getElementById('childIdInput').value = childId;
    updateGrowthDisplay(childId);
+   updateGrowthCharts(childId);
  }
 });
 
@@ -1200,8 +1160,9 @@ function submitGrowthData(event) {
    document.getElementById('heightInput').value = '';
    document.getElementById('weightInput').value = '';
 
-   // Refresh growth display
+   // Refresh growth display and charts
    updateGrowthDisplay(childId);
+   updateGrowthCharts(childId);
   } else {
    throw new Error(data.message || 'Failed to save growth data');
   }
@@ -1284,11 +1245,175 @@ function updateDevelopmentProgress(ageInYears) {
  });
 }
 
-// Update growth charts based on child data (placeholder for now)
+// Update growth charts based on child data
 function updateGrowthCharts(childId) {
- // This would fetch real data from database in a full implementation
- // For now, we'll keep the existing chart data
- console.log('Updating charts for child ID:', childId);
+ if (!childId) return;
+
+ // Fetch chart data from server
+ fetch(`get_growth_chart_data.php?child_id=${childId}`)
+ .then(response => response.json())
+ .then(data => {
+   if (data.success) {
+     renderHeightChart(data.chart_data);
+     renderWeightChart(data.chart_data);
+   } else {
+     console.error('Failed to fetch chart data:', data.message);
+     // Show empty charts if no data
+     renderHeightChart({labels: [], height: [], weight: []});
+     renderWeightChart({labels: [], height: [], weight: []});
+   }
+ })
+ .catch(error => {
+   console.error('Error fetching chart data:', error);
+ });
+}
+
+// Render height chart
+function renderHeightChart(chartData) {
+ const ctx = document.getElementById('heightChart').getContext('2d');
+
+ // Destroy existing chart if it exists
+ if (heightChart) {
+   heightChart.destroy();
+ }
+
+ heightChart = new Chart(ctx, {
+   type: 'line',
+   data: {
+     labels: chartData.labels,
+     datasets: [{
+       label: 'Height (cm)',
+       data: chartData.height,
+       borderColor: '#ff9800',
+       backgroundColor: 'rgba(255, 152, 0, 0.1)',
+       borderWidth: 3,
+       fill: true,
+       tension: 0.4,
+       pointBackgroundColor: '#ff9800',
+       pointBorderColor: '#fff',
+       pointBorderWidth: 2,
+       pointRadius: 6,
+       pointHoverRadius: 8
+     }]
+   },
+   options: {
+     responsive: true,
+     maintainAspectRatio: false,
+     plugins: {
+       legend: {
+         display: false
+       },
+       tooltip: {
+         backgroundColor: 'rgba(0, 0, 0, 0.8)',
+         titleColor: '#fff',
+         bodyColor: '#fff',
+         callbacks: {
+           label: function(context) {
+             return context.parsed.y + ' cm';
+           }
+         }
+       }
+     },
+     scales: {
+       y: {
+         beginAtZero: false,
+         min: Math.min(...chartData.height) - 5 || 0,
+         max: Math.max(...chartData.height) + 10 || 120,
+         ticks: {
+           callback: function(value) {
+             return value + ' cm';
+           }
+         },
+         grid: {
+           color: 'rgba(255, 152, 0, 0.1)'
+         }
+       },
+       x: {
+         grid: {
+           color: 'rgba(255, 152, 0, 0.1)'
+         }
+       }
+     },
+     interaction: {
+       intersect: false,
+       mode: 'index'
+     }
+   }
+ });
+}
+
+// Render weight chart
+function renderWeightChart(chartData) {
+ const ctx = document.getElementById('weightChart').getContext('2d');
+
+ // Destroy existing chart if it exists
+ if (weightChart) {
+   weightChart.destroy();
+ }
+
+ weightChart = new Chart(ctx, {
+   type: 'line',
+   data: {
+     labels: chartData.labels,
+     datasets: [{
+       label: 'Weight (kg)',
+       data: chartData.weight,
+       borderColor: '#4caf50',
+       backgroundColor: 'rgba(76, 175, 80, 0.1)',
+       borderWidth: 3,
+       fill: true,
+       tension: 0.4,
+       pointBackgroundColor: '#4caf50',
+       pointBorderColor: '#fff',
+       pointBorderWidth: 2,
+       pointRadius: 6,
+       pointHoverRadius: 8
+     }]
+   },
+   options: {
+     responsive: true,
+     maintainAspectRatio: false,
+     plugins: {
+       legend: {
+         display: false
+       },
+       tooltip: {
+         backgroundColor: 'rgba(0, 0, 0, 0.8)',
+         titleColor: '#fff',
+         bodyColor: '#fff',
+         callbacks: {
+           label: function(context) {
+             return context.parsed.y + ' kg';
+           }
+         }
+       }
+     },
+     scales: {
+       y: {
+         beginAtZero: false,
+         min: Math.min(...chartData.weight) - 2 || 0,
+         max: Math.max(...chartData.weight) + 5 || 25,
+         ticks: {
+           callback: function(value) {
+             return value + ' kg';
+           }
+         },
+         grid: {
+           color: 'rgba(76, 175, 80, 0.1)'
+         }
+       },
+       x: {
+         grid: {
+           color: 'rgba(76, 175, 80, 0.1)'
+         }
+       }
+     },
+     interaction: {
+       intersect: false,
+       mode: 'index'
+     }
+   }
+ });
 }
 
 /* ===========================================
