@@ -1,12 +1,61 @@
+<?php
+  // Include database connection
+  include '../config/db.php';
+
+
+  // Get child ID from URL parameter or default to first child
+  $selected_child_id = isset($_GET['child_id']) ? (int)$_GET['child_id'] : null;
+
+  // Fetch all children
+  $children = [];
+  $sql = "SELECT child_id, child_name, dob FROM children ORDER BY created_at DESC";
+  $result = $conn->query($sql);
+
+  if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $children[] = $row;
+    }
+  }
+
+  // If no child selected, use the first one
+  if (!$selected_child_id && !empty($children)) {
+    $selected_child_id = $children[0]['child_id'];
+  }
+
+  // Fetch milestone data for selected child
+  $milestones = [];
+  $total_completed = 0;
+  $total_milestones = 0;
+
+  if ($selected_child_id) {
+    $sql = "SELECT domain, question, answer FROM child_milestones WHERE child_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $selected_child_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+      $milestones[] = $row;
+      $total_milestones++;
+      if ($row['answer'] === 'yes') {
+        $total_completed++;
+      }
+    }
+    $stmt->close();
+  }
+
+  // Calculate completion percentage
+  $completion_percentage = $total_milestones > 0 ? round(($total_completed / $total_milestones) * 100) : 0;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Completion Status & Tasks</title>
+<title>Completion Status & Tasks - <?php echo $selected_child_id ? 'Child Milestones' : 'Milestone Tracker'; ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Css/style.css">
+<link rel="stylesheet" href="../Css/style.css">
 <style>
 *{
   margin:0;
@@ -25,6 +74,42 @@ body{
   max-width:1100px;
   margin:auto;
   padding:30px 15px;
+}
+
+/* ================= CHILD SELECTOR ================= */
+.child-selector{
+  background:#fff;
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:30px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.child-selector h3{
+  margin-bottom:15px;
+  color:#333;
+}
+
+.child-buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.child-btn{
+  background:#ff9800;
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:25px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.child-btn:hover,
+.child-btn.active{
+  background:#e68900;
+  transform:translateY(-2px);
 }
 
 /* ================= COMPLETION STATUS ================= */
@@ -250,8 +335,11 @@ body{
     flex-direction:column;
     align-items:flex-start;
   }
-}
 
+  .child-buttons{
+    justify-content:center;
+  }
+}
 </style>
 </head>
 
@@ -259,165 +347,123 @@ body{
 
 <div class="wrapper">
 
+<!-- CHILD SELECTOR -->
+<?php if (!empty($children)): ?>
+<div class="child-selector">
+  <h3>Select Child</h3>
+  <div class="child-buttons">
+    <?php foreach ($children as $child): ?>
+      <button class="child-btn <?php echo ($selected_child_id == $child['child_id']) ? 'active' : ''; ?>"
+              onclick="selectChild(<?php echo $child['child_id']; ?>)">
+        <?php echo htmlspecialchars($child['child_name']); ?>
+      </button>
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
+
 <!-- COMPLETION STATUS -->
 <div class="completion">
   <h2>Completion Status</h2>
   <div class="status-row">
     <div class="status-card">
       <p>Total Milestones</p>
-      <h3>8</h3>
+      <h3><?php echo $total_milestones; ?></h3>
     </div>
 
-    <div class="circle">3/5</div>
+    <div class="circle"><?php echo $total_completed; ?>/<?php echo $total_milestones; ?></div>
 
     <div class="status-card">
-      <p>Total Tasks</p>
-      <h3>20</h3>
+      <p>Completed Tasks</p>
+      <h3><?php echo $total_completed; ?></h3>
     </div>
   </div>
 </div>
 
-<!-- TASKS -->
+<!-- MILESTONES -->
 <div class="tasks">
-  <h2>Today's Tasks</h2>
+  <h2>Milestone Progress</h2>
 
-  <div class="task completed">
-    <div class="task-info">
-      <p>Practice saying “ball” 10 times</p>
-      <span class="tag language">Language</span>
+  <?php if (!empty($milestones)): ?>
+    <?php foreach ($milestones as $milestone): ?>
+      <div class="task <?php echo ($milestone['answer'] === 'yes') ? 'completed' : ''; ?>">
+        <div class="task-info">
+          <p><?php echo htmlspecialchars($milestone['question']); ?></p>
+          <span class="tag <?php echo strtolower($milestone['domain']); ?>">
+            <?php echo htmlspecialchars($milestone['domain']); ?>
+          </span>
+        </div>
+        <div class="check <?php echo ($milestone['answer'] === 'yes') ? 'active' : ''; ?>">
+          <?php echo ($milestone['answer'] === 'yes') ? '✓' : ''; ?>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <div class="task">
+      <div class="task-info">
+        <p>No milestones found for this child. Please add milestone data first.</p>
+      </div>
     </div>
-    <div class="check active">✓</div>
-  </div>
+  <?php endif; ?>
 
-  <div class="task">
-    <div class="task-info">
-      <p>Dance for 10 seconds</p>
-      <span class="tag motor">Motor</span>
-    </div>
-    <div class="check"></div>
-  </div>
-
-  <div class="task completed">
-    <div class="task-info">
-      <p>Compete pattern matching game</p>
-      <span class="tag cognitive">Cognitive</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
-  <div class="task completed">
-    <div class="task-info">
-      <p>Share your toy with a friend</p>
-      <span class="tag social">Social</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
+  <!-- SAMPLE MILESTONE TASK -->
   <div class="milestone">
     <div class="milestone-title">🏆 Milestone Task</div>
     <div class="milestone-box">
       <div>
-        <p>Solve a puzzle – Record progress video</p>
+        <p>Complete a milestone task - Record progress video</p>
         <span class="tag cognitive">Cognitive</span>
       </div>
       <label class="upload">
-  <span class="icon">⬆</span>
-  <input type="file" accept="video/*">
-</label>
+        <span class="icon">⬆</span>
+        <input type="file" accept="video/*">
+      </label>
+    </div>
+  </div>
 </div>
-</div>
-<div class="tasks past-tasks" style="margin-top:20px">
-  <h3 class="date-title">5 Aug 2025</h3>
 
+<!-- PAST TASKS SAMPLE -->
+<div class="tasks past-tasks" style="margin-top:20px">
+  <h3 class="date-title"><?php echo date('d M Y', strtotime('-1 day')); ?></h3>
 
   <div class="task completed">
     <div class="task-info">
-      <p>Practice saying “ring” 5 times</p>
+      <p>Sample completed task from yesterday</p>
       <span class="tag language">Language</span>
     </div>
     <div class="check active">✓</div>
   </div>
 
-  <div class="task failed">
-    <div class="task-info">
-      <p>Jump for 10 seconds</p>
-      <span class="tag motor">Motor</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
-  <div class="task completed">
-    <div class="task-info">
-      <p>Practice saying “ring” 5 times</p>
-      <span class="tag cognitive">Cognitive</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
-  <!-- VIDEO VERIFIED ONLY -->
   <!-- MILESTONE -->
   <div class="milestone">
     <div class="milestone-title">🏆 Milestone Task</div>
-
     <div class="milestone-box">
       <div class="task-info">
-        <p>Speak 5 words  on your own</p>
-        <span class="tag motor">Language</span>
-      </div>
-
-      <span class="video-badge">Video Verified</span>
-    </div>
-  </div>
-
-<!-- DATE -->
-<div class="date-title">4 Aug 2025</div>
-
-<!-- TASKS SECTION -->
-<div class="tasks past-tasks">
-
-  <!-- Task 1 -->
-  <div class="task completed">
-    <div class="task-info">
-      <p>Sort shapes by types</p>
-      <span class="tag cognitive">Cognitive</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
-  <!-- Task 2 (failed / pending) -->
-  <div class="task failed">
-    <div class="task-info">
-      <p>Walk up stairs with support</p>
-      <span class="tag motor">Motor</span>
-    </div>
-    <div class="check active">✓</div>
-  </div>
-
-  <!-- MILESTONE -->
-  <div class="milestone">
-    <div class="milestone-title">🏆 Milestone Task</div>
-
-    <div class="milestone-box">
-      <div class="task-info">
-        <p>Run for 10 seconds in ground</p>
+        <p>Sample milestone from yesterday</p>
         <span class="tag motor">Motor</span>
       </div>
-
       <span class="video-badge">Video Verified</span>
     </div>
   </div>
+</div>
 
 </div>
 
 <script>
-/* ===== TASK CHECK / UNCHECK + PROGRESS ===== */
+// Child selection functionality
+function selectChild(childId) {
+  window.location.href = 'melistone.php?child_id=' + childId;
+}
 
+/* ===== TASK CHECK / UNCHECK + PROGRESS ===== */
 const checks = document.querySelectorAll('.check');
 const progressText = document.querySelector('.circle');
 const totalTasksBox = document.querySelector('.status-card:last-child h3');
 
 const totalTasks = document.querySelectorAll('.task').length;
-totalTasksBox.innerText = totalTasks;
+if (totalTasksBox) {
+  totalTasksBox.innerText = totalTasks;
+}
 
 function updateProgress(){
   let done = 0;
@@ -435,12 +481,13 @@ function updateProgress(){
     }
   });
 
-  progressText.innerText = done + '/' + totalTasks;
+  if (progressText) {
+    progressText.innerText = done + '/' + totalTasks;
+  }
 }
 
 checks.forEach(check => {
   check.addEventListener('click', () => {
-
     // ❌ failed / cross task disable
     if(check.classList.contains('cross')) return;
 
@@ -461,7 +508,6 @@ if(uploadBtn){
 }
 </script>
 
-
-
 </body>
 </html>
+<?php $conn->close(); ?>
